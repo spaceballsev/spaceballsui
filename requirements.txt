@@ -1,0 +1,4 @@
+# Dev/test/deploy
+websockets
+asyncio
+python-can

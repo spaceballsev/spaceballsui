@@ -1,0 +1,9 @@
+[{
+    "id": 853,
+    "unit": "%",
+    "key": "state_of_charge",
+    "scale": 1,
+    "start": 0,
+    "length": 16,
+    "transformer": "little_endian"
+}]
