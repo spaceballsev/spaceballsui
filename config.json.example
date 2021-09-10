@@ -14,4 +14,15 @@
     "start": 16,
     "length": 8,
     "transformer": "little_endian"
+}, {
+    "id": 905,
+    "unit": "",
+    "key": "charger_status",
+    "start": 43,
+    "length": 1,
+    "transformer": "value_map",
+    "map": {
+        "0x00": "Stadby",
+        "0x01": "Charging"
+    }
 }]

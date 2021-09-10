@@ -45,6 +45,7 @@ def mockCanBus():
     global chargeTask 
     chargeTask = bus2.send_periodic(chargeMessage, 0.50)
 
+
 # Create Notifier with an explicit loop to use for scheduling of callbacks
 print('Running. Press CTRL-C to exit.')
 signal(SIGINT, quit)
