@@ -27,10 +27,9 @@ async def handleMessage(msg):
     
     return response
 
-def little_endian(msg, config):
+def unpack(msg, config, str):
     start = config['start']
     length = config['length']
-    str = '<'
     if length == 16:
         str = str + 'i'
     elif length == 8:
@@ -38,11 +37,11 @@ def little_endian(msg, config):
 
     return struct.unpack_from(str, msg.data, int(start/8))[0]
 
-def big_endian(msg, config):
-    start = config['start']
-    length = config['length']
-    str = '>'
-    if length == 16:
-        str = str + 'i'
+def little_endian(msg, config):
+    str = '<'
+    return unpack(msg, config, str)
+   
 
-    return struct.unpack_from(str, msg.data, start)[0]
+def big_endian(msg, config):
+    str = '>'
+    return unpack(msg, config, str)
