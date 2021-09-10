@@ -6,4 +6,12 @@
     "start": 0,
     "length": 16,
     "transformer": "little_endian"
+}, {
+    "id": 905,
+    "unit": "A",
+    "key": "charging_current",
+    "scale": 0.1,
+    "start": 16,
+    "length": 8,
+    "transformer": "little_endian"
 }]
