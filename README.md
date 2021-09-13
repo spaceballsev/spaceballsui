@@ -17,6 +17,12 @@ python setup.py install
 ```bash
 $ spaceballs run
 ```
+or
+
+```bash
+$ spaceballs run --config /path/to/config.json
+```
+
 outputs:
 ```bash
 Running. Press CTRL-C to exit.
