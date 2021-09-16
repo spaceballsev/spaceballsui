@@ -2,3 +2,5 @@
 websockets
 asyncio
 python-can
+pytest
+click
