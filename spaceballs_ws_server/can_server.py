@@ -23,7 +23,7 @@ class CANServer:
 
     def __init__(self, config_path):
         #virtual interfaces for development
-        self.bus = can.interface.Bus('test', bustype='virtual')
+        self.bus = can.interface.Bus('can0', bustype='socketcan_native')
 
         self.bus2 = can.interface.Bus('test', bustype='virtual')
 
