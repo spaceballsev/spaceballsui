@@ -60,7 +60,21 @@ class CANServer:
 
         chargeMessage = can.Message(
             arbitration_id=0x389,
-            data=[0xB0, 0xEB, 0x3C, 0x3D, 0x45, 0xCA, 0x5F, 0x3C],
+            data=[0xB0, 0xEB, 0x10, 0x3D, 0x45, 0xCA, 0x5F, 0x3C],
             is_extended_id=False)
             
         self.tasks.append(self.bus2.send_periodic(chargeMessage, 0.50))
+
+        tempMessage = can.Message(
+            arbitration_id=0x38A,
+            data=[0x60, 0x50, 0x10, 0x3D, 0x45, 0xCA, 0x5F, 0x3C],
+            is_extended_id=False)
+            
+        self.tasks.append(self.bus2.send_periodic(tempMessage, 0.50))
+
+        temp2Message = can.Message(
+            arbitration_id=0x38B,
+            data=[0x60, 0x50, 0x10, 0x3D, 0x45, 0xCA, 0x5F, 0x3C],
+            is_extended_id=False)
+            
+        self.tasks.append(self.bus2.send_periodic(temp2Message, 0.50))

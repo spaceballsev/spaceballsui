@@ -1,0 +1,44 @@
+[{
+    "id": 853,
+    "unit": "%",
+    "key": "state_of_charge",
+    "scale": 1,
+    "start": 0,
+    "length": 16,
+    "transformer": "little_endian"
+}, {
+    "id": 905,
+    "unit": "A",
+    "key": "charging_current",
+    "scale": 0.1,
+    "start": 16,
+    "length": 8,
+    "transformer": "little_endian"
+}, {
+    "id": 905,
+    "unit": "",
+    "key": "charger_status",
+    "start": 43,
+    "length": 1,
+    "transformer": "value_map",
+    "map": {
+        "0x00": "Stadby",
+        "0x01": "Charging"
+    }
+}, {
+    "id": 906,
+    "unit": "C",
+    "key": "motor_temperature",
+    "scale": 1,
+    "start": 0,
+    "length": 8,
+    "transformer": "little_endian"
+}, {
+    "id": 907,
+    "unit": "C",
+    "key": "inverter_temperature",
+    "scale": 1,
+    "start": 8,
+    "length": 8,
+    "transformer": "little_endian"
+}]
