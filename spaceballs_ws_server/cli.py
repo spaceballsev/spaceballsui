@@ -19,29 +19,15 @@ def cli():
 
 @cli.command()
 @click.option('--config', type=click.Path(), default=default_config)
-def test(config):
+@click.option('--virtual', is_flag=True, flag_value="virtual", default="socketcan_native",
+    help="A flag to create a virtual can interface, otherwise it expects an active can bus on 'can0'")
+def run(config, virtual):
     """
     Create Notifier with an explicit loop to use for scheduling of callbacks
     """
     print('Running. Press CTRL-C to exit.')
 
-    ws_server = CANServer(config)
-
-    signal(SIGINT, quit)
-
-    ws_server.mockCanBus() #TODO: Put this into pytest, not here.
-
-    ws_server.run()
-
-@cli.command()
-@click.option('--config', type=click.Path(), default=default_config)
-def run(config):
-    """
-    Create Notifier with an explicit loop to use for scheduling of callbacks
-    """
-    print('Running. Press CTRL-C to exit.')
-
-    ws_server = CANServer(config)
+    ws_server = CANServer(config, bustype=virtual)
 
     signal(SIGINT, quit)
 

@@ -16,6 +16,3 @@ async def client():
         while True:
             response = await websocket.recv()
             print(response)
-
-signal(SIGINT, quit)
-asyncio.get_event_loop().run_until_complete(client())

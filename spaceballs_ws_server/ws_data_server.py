@@ -6,23 +6,27 @@ import websockets
 from .can_processor import CANProcessor
 
 class WebSocketDataServer:
-    def __init__(self, config_path, reader):
+    def __init__(self, config_path, reader, loop, host="localhost", port=6789):
         self.can_processor = CANProcessor(config_path)
         self.reader = reader
+        self.host = host
+        self.port = port
+        self.loop = loop
+        self.uri = f'ws://{self.host}:{self.port}'
 
-
-    async def run(self, reader):
+    async def run(self):
         """
             Run the server forever
         """
+        import pudb; pudb.set_trace()
         print("Web socket server starting on port 6789")
-        self.reader = reader
-        async with websockets.serve(self.producer_handler, "localhost", 6789):
-            await asyncio.Future()  # run forever
+        async with websockets.serve(self.producer_handler, self.host, self.port):
+            await self.loop.create_future()  # run forever
 
     async def producer_handler(self, websocket, path):
         """
-        Handle incoming messages
+        Handle incoming messages, process them and then relay the processed data
+        on a web socket.
         """
         while True:
             message = await self.reader.get_message()

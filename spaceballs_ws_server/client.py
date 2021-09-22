@@ -10,19 +10,23 @@ class WSClient:
     """
     Web socket client, used primarily for testing
     """
+
+    def __init__(self, host='localhost', port=6789):
+        self.port = port
+        self.host = host
+        self.uri = f"ws://{host}:{port}"
+
     def quit(self, signal_received, frame):
         # Handle any cleanup here
         print('SIGINT or CTRL-C detected. Exiting gracefully')
         exit(0)
 
     async def client(self):
-        uri = "ws://localhost:6789"
-        async with websockets.connect(uri) as websocket:
+        async with websockets.connect(self.uri) as websocket:
             while True:
                 response = await websocket.recv()
                 print(response)
 
     def run(self):
-
         signal(SIGINT, self.quit)
         asyncio.get_event_loop().run_until_complete(self.client())

@@ -14,18 +14,23 @@ class CANServer:
         print('SIGINT or CTRL-C detected. Exiting gracefully')
         self.loop.stop()
         self.bus.shutdown()
-        self.bus2.shutdown()
 
         for t in self.tasks:
             t.stop()
 
         exit(0)
 
-    def __init__(self, config_path):
+    def __init__(self, config_path, bustype="socketcan_native"):
+        """
+            Initialise the bus interface, reader, listeners and web socket server
+            args:
+                config_path (filepath): A path to a json file specifying the config (see examples)
+                bystype (str): 'socketcan_native' or 'virtual'. Defaults to socketcan_native
+            returns:
+                None
+        """
         #virtual interfaces for development
-        self.bus = can.interface.Bus('can0', bustype='socketcan_native')
-
-        self.bus2 = can.interface.Bus('test', bustype='virtual')
+        self.bus = can.interface.Bus('can0', bustype=bustype)
 
         self.reader = can.AsyncBufferedReader()
 
@@ -39,28 +44,11 @@ class CANServer:
 
         self.notifier = can.Notifier(self.bus, self.listeners, loop=self.loop)
 
-        self.web_socket_server = WebSocketDataServer(config_path, self.reader)
+        self.web_socket_server = WebSocketDataServer(config_path, self.reader, self.loop)
 
     def run(self):
         """
         Run the server
         """
-        self.loop.run_until_complete(self.web_socket_server.run(self.reader))
+        self.loop.run_until_complete(self.web_socket_server.run())
         self.loop.run_forever()
-
-    def mockCanBus(self):
-        """
-        Create some test messages. TODO: MOve this to a proper unit test.
-        """
-        socMessage = can.Message(
-            arbitration_id=0x355,
-            data=[0x3C, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0],
-            is_extended_id=False)
-        self.tasks.append(self.bus2.send_periodic(socMessage, 0.50))
-
-        chargeMessage = can.Message(
-            arbitration_id=0x389,
-            data=[0xB0, 0xEB, 0x3C, 0x3D, 0x45, 0xCA, 0x5F, 0x3C],
-            is_extended_id=False)
-            
-        self.tasks.append(self.bus2.send_periodic(chargeMessage, 0.50))
