@@ -4,3 +4,4 @@ asyncio
 python-can
 pytest
 click
+pytest-asyncio

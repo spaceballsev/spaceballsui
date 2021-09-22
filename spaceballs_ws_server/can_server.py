@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import os
 from sys import exit
+import json
 from signal import signal, SIGINT
 
 import asyncio
@@ -14,18 +16,24 @@ class CANServer:
         print('SIGINT or CTRL-C detected. Exiting gracefully')
         self.loop.stop()
         self.bus.shutdown()
-        self.bus2.shutdown()
 
         for t in self.tasks:
             t.stop()
 
         exit(0)
 
-    def __init__(self, config_path):
+    def __init__(self, config_path, bustype="socketcan_native"):
+        """
+            Initialise the bus interface, reader, listeners and web socket server
+            args:
+                config_path (filepath): A path to a json file specifying the config (see examples)
+                bystype (str): 'socketcan_native' or 'virtual'. Defaults to socketcan_native
+            returns:
+                None
+        """
+        self.config_path = config_path
         #virtual interfaces for development
-        self.bus = can.interface.Bus('test', bustype='virtual')
-
-        self.bus2 = can.interface.Bus('test', bustype='virtual')
+        self.bus = can.interface.Bus('can0', bustype=bustype)
 
         self.reader = can.AsyncBufferedReader()
 
@@ -39,42 +47,27 @@ class CANServer:
 
         self.notifier = can.Notifier(self.bus, self.listeners, loop=self.loop)
 
-        self.web_socket_server = WebSocketDataServer(config_path, self.reader)
+        self.web_socket_server = WebSocketDataServer(config_path, self.reader, self.loop)
 
     def run(self):
         """
         Run the server
         """
-        self.loop.run_until_complete(self.web_socket_server.run(self.reader))
+        self.loop.run_until_complete(self.web_socket_server.run())
         self.loop.run_forever()
 
     def mockCanBus(self):
         """
         Create some test messages. TODO: MOve this to a proper unit test.
         """
-        socMessage = can.Message(
-            arbitration_id=0x355,
-            data=[0x3C, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0],
-            is_extended_id=False)
-        self.tasks.append(self.bus2.send_periodic(socMessage, 0.50))
+        self.bus2 = can.interface.Bus('can0', bustype='virtual')
+        bus_dir = os.path.join(os.path.dirname(self.config_path), '..', 'busses', 'dev.json')
 
-        chargeMessage = can.Message(
-            arbitration_id=0x389,
-            data=[0xB0, 0xEB, 0x10, 0x3D, 0x45, 0xCA, 0x5F, 0x3C],
-            is_extended_id=False)
-            
-        self.tasks.append(self.bus2.send_periodic(chargeMessage, 0.50))
-
-        tempMessage = can.Message(
-            arbitration_id=0x38A,
-            data=[0x60, 0x50, 0x10, 0x3D, 0x45, 0xCA, 0x5F, 0x3C],
-            is_extended_id=False)
-            
-        self.tasks.append(self.bus2.send_periodic(tempMessage, 0.50))
-
-        temp2Message = can.Message(
-            arbitration_id=0x38B,
-            data=[0x60, 0x50, 0x10, 0x3D, 0x45, 0xCA, 0x5F, 0x3C],
-            is_extended_id=False)
-            
-        self.tasks.append(self.bus2.send_periodic(temp2Message, 0.50))
+        with open(bus_dir, 'r') as f:
+            bus_data = json.load(f)
+        for bus in bus_data['busses']:
+            msg = can.Message(
+                arbitration_id=int(bus['arbitration_id'], 16),
+                data=[int(i, 16) for i in bus['data']],
+                is_extended_id=False)
+            self.tasks.append(self.bus2.send_periodic(msg, 0.50))

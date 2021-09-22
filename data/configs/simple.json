@@ -25,4 +25,20 @@
         "0x00": "Stadby",
         "0x01": "Charging"
     }
+}, {
+    "id": 906,
+    "unit": "C",
+    "key": "motor_temperature",
+    "scale": 1,
+    "start": 0,
+    "length": 8,
+    "transformer": "little_endian"
+}, {
+    "id": 907,
+    "unit": "C",
+    "key": "inverter_temperature",
+    "scale": 1,
+    "start": 8,
+    "length": 8,
+    "transformer": "little_endian"
 }]
